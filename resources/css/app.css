@@ -1,0 +1,25 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.category-link:hover {
+    color: #f06292;
+    text-decoration: underline;
+}
+
+body {
+    background: linear-gradient(135deg, #fbe4f0, #f8d8e6);
+}
+.btn-pink {
+    background-color: #f06292; /* Pink color */
+    border-color: #f06292;
+}
+.btn-outline-pink {
+    color: #f06292;
+    border-color: #f06292;
+}
+.btn-outline-pink:hover {
+    background-color: #f06292;
+    color: white;
+}
