@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
     <!-- Flower-themed Navbar -->
-    <FlowerNavBar />
+  
     <header
                 class="bg-white shadow"
                 v-if="$slots.header"

@@ -12,12 +12,30 @@ class FlowerController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $flowers = Flower::paginate(8);
-        return response()->json($flowers); // Return flowers as JSON
+        $query = Flower::query();
+
+        if ($request->has('category') && $request->category !== 'ALL') {
+            $query->where('category', $request->category);
+        }
+
+        $flowers = $query->orderBy('created_at', 'desc')->paginate(8);
+
+        return response()->json($flowers);
     }
-    
+
+
+    /**
+     * Display the management page for flowers.
+     *
+     * @return \Inertia\Response
+     */
+    public function manage()
+    {
+        $flowers = Flower::all(); // Fetch all flowers for management
+        return inertia('Flowers/Manage', ['flowers' => $flowers]); // Render Inertia Vue page
+    }
     /**
      * Show the form for creating a new flower.
      *
@@ -25,8 +43,9 @@ class FlowerController extends Controller
      */
     public function create()
     {
-        return view('flowers.create'); // Display form for creating a flower
+        return inertia('Flowers/Create'); // ✅ This expects a Vue component at resources/js/Pages/Flowers/Create.vue
     }
+
 
     /**
      * Store a newly created flower in the database.
@@ -34,21 +53,28 @@ class FlowerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'rating' => 'required|integer|min:1|max:5',
-            'image_path' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'required|string|max:255',
+        'price' => 'required|numeric',
+        'rating' => 'required|integer|min:1|max:5',
+        'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'description' => 'nullable|string',
+    ]);
 
-        Flower::create($request->all());
+    if ($request->hasFile('image_path')) {
+        $filename = time() . '_' . $request->file('image_path')->getClientOriginalName();
+        $request->file('image_path')->move(public_path('images'), $filename);
+        $validated['image_path'] = 'images/' . $filename;
 
-        return redirect()->route('flowers.index')->with('success', 'Flower added to catalog successfully.');
     }
+
+    Flower::create($validated);
+
+    return back()->with('success', 'Flower created catalog successfully.');
+}
 
     /**
      * Display the specified flower.
@@ -69,7 +95,10 @@ class FlowerController extends Controller
      */
     public function edit(Flower $flower)
     {
-        return view('flowers.edit', compact('flower')); // Display form for editing a flower
+        return inertia('Flowers/Edit', [
+            'flower' => $flower,
+        ]);
+
     }
 
     /**
@@ -79,21 +108,29 @@ class FlowerController extends Controller
      * @param  \App\Models\Flower  $flower
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Flower $flower)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'rating' => 'required|integer|min:1|max:5',
-            'image_path' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+public function update(Request $request, Flower $flower)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'required|string|max:255',
+        'price' => 'required|numeric',
+        'rating' => 'required|integer|min:1|max:5',
+        'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'description' => 'nullable|string',
+    ]);
 
-        $flower->update($request->all());
+    if ($request->hasFile('image_path')) {
+        $filename = time() . '_' . $request->file('image_path')->getClientOriginalName();
+        $request->file('image_path')->move(public_path('images'), $filename);
+        $validated['image_path'] = 'images/' . $filename;
 
-        return redirect()->route('flowers.index')->with('success', 'Flower updated successfully.');
     }
+
+    $flower->update($validated);
+
+    return back()->with('success', 'Flower edited from catalog successfully.');
+}
+
 
     /**
      * Remove the specified flower from the database.
@@ -105,6 +142,6 @@ class FlowerController extends Controller
     {
         $flower->delete();
 
-        return redirect()->route('flowers.index')->with('success', 'Flower removed from catalog successfully.');
+        return back()->with('success', 'Flower removed from catalog successfully.');
     }
 }

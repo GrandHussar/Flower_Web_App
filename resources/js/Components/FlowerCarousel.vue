@@ -1,32 +1,36 @@
 <script setup>
 import { Carousel, Slide } from 'vue3-carousel';
-import 'vue3-carousel/dist/carousel.css'; // Ensure the carousel's CSS is imported
+import 'vue3-carousel/dist/carousel.css';
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
 
+const carouselImages = ref([]);
 
-const flowerImages = [
-    { src: 'storage/images/flower1.jpg', alt: 'Beautiful Pink Flower' },
-    { src: 'storage/images/flower2.jpg', alt: 'Blooming White Flower' },
-    { src: 'storage/images/flower3.jpg', alt: 'Vibrant Red Flower' },
-    // Add more images as needed
-];
+const fetchCarouselImages = async () => {
+    try {
+        const res = await axios.get('/api/carousels');
+        carouselImages.value = res.data;
+    } catch (error) {
+        console.error('Error loading carousel images:', error);
+    }
+};
 
+onMounted(fetchCarouselImages);
 </script>
 
 <template>
     <div class="mb-10 mx-auto max-w-2xl p-4 bg-white rounded-lg shadow-md">
         <Carousel :autoplay="true" :loop="true" class="flower-carousel mx-auto max-w-lg">
-            <Slide v-for="(flower, index) in flowerImages" :key="index">
-                <img :src="flower.src" :alt="flower.alt" class="carousel-image w-full h-60 object-cover rounded-lg" />
+            <Slide v-for="(image, index) in carouselImages" :key="index">
+            <img
+            :src="`/storage/${image.image_path}`"
+            :alt="image.alt || 'Carousel Image'"
+            class="carousel-image w-full h-60 object-cover rounded-lg"
+            />
             </Slide>
         </Carousel>
     </div>
 </template>
-
-<style scoped>
-.carousel-image {
-    object-fit: cover;
-}
-</style>
 
 <style scoped>
 .flower-carousel {
@@ -34,7 +38,7 @@ const flowerImages = [
 }
 
 .carousel-image {
-    max-height: 400px; /* Adjust as needed */
+    max-height: 400px;
     object-fit: cover;
 }
 </style>

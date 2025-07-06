@@ -7,7 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
-
+        <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -18,6 +21,7 @@
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
+        <div id="app" data-page="{{ json_encode($page) }}"></div>
         @inertia
     </body>
 </html>

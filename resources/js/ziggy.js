@@ -1,0 +1,5 @@
+const Ziggy = {"url":"http:\/\/localhost","port":null,"defaults":{},"routes":{"sanctum.csrf-cookie":{"uri":"sanctum\/csrf-cookie","methods":["GET","HEAD"]},"login":{"uri":"login","methods":["GET","HEAD"]},"logout":{"uri":"logout","methods":["POST"]},"dashboard":{"uri":"dashboard","methods":["GET","HEAD"]},"flowers.index":{"uri":"flowers","methods":["GET","HEAD"]},"flowers.manage":{"uri":"flowers\/manage","methods":["GET","HEAD"]},"flowers.store":{"uri":"flowers","methods":["POST"]},"flowers.edit":{"uri":"flowers\/{flower}\/edit","methods":["GET","HEAD"],"parameters":["flower"],"bindings":{"flower":"id"}},"flowers.update":{"uri":"flowers\/{flower}","methods":["PUT"],"parameters":["flower"],"bindings":{"flower":"id"}},"flowers.destroy":{"uri":"flowers\/{flower}","methods":["DELETE"],"parameters":["flower"],"bindings":{"flower":"id"}},"storage.local":{"uri":"storage\/{path}","methods":["GET","HEAD"],"wheres":{"path":".*"},"parameters":["path"]}}};
+if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {
+  Object.assign(Ziggy.routes, window.Ziggy.routes);
+}
+export { Ziggy };
